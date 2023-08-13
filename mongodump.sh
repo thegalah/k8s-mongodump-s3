@@ -7,7 +7,7 @@ if [ -z "$MONGO_CONNECTION_STRING" ] || ([ -z "$MINIO_ENDPOINT" ] && [ -z "$S3_E
 fi
 
 # Mongodump
-mongodump --uri="$MONGO_CONNECTION_STRING" --archive="/dump/archive"
+mongodump --uri="$MONGO_CONNECTION_STRING" --archive="/dump/archive" --gzip
 
 # Configure AWS CLI with S3 or MinIO endpoint
 if [ -n "$S3_ENDPOINT" ]; then
