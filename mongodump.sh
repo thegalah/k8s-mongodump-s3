@@ -21,7 +21,7 @@ run_mongodump() {
 }
 
 # Attempt to run the mongodump command up to 3 times if it fails
-RETRIES=3
+RETRIES=10
 for i in $(seq 1 $RETRIES); do
     run_mongodump
     EXIT_CODE=$?
