@@ -13,30 +13,30 @@ mkdir -p /dump/archive
 FILENAME="/dump/archive/dump_$(date +'%Y%m%d%H%M').gz"
 
 # Building the mongodump command
-DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"$FILENAME\" --gzip --forceTableScan"
+DUMP_OPTIONS=(--uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan)
 
 if [ -n "$MONGO_USERNAME" ]; then
-    DUMP_CMD+=" --username=\"$MONGO_USERNAME\""
+    DUMP_OPTIONS+=(--username="$MONGO_USERNAME")
 fi
 
 if [ -n "$MONGO_PASSWORD" ]; then
-    DUMP_CMD+=" --password=\"$MONGO_PASSWORD\""
+    DUMP_OPTIONS+=(--password="$MONGO_PASSWORD")
 fi
 
 if [ -n "$MONGO_DATABASE" ]; then
-    DUMP_CMD+=" --db=\"$MONGO_DATABASE\""
+    DUMP_OPTIONS+=(--db="$MONGO_DATABASE")
 fi
 
 if [ -n "$MONGO_COLLECTION" ]; then
-    DUMP_CMD+=" --collection=\"$MONGO_COLLECTION\""
+    DUMP_OPTIONS+=(--collection="$MONGO_COLLECTION")
 fi
 
 if [ -n "$MONGO_QUERY" ]; then
-    DUMP_CMD+=" --query=\"$MONGO_QUERY\""
+    DUMP_OPTIONS+=(--query="$MONGO_QUERY")
 fi
 
 # Running the mongodump command
-eval $DUMP_CMD
+mongodump "${DUMP_OPTIONS[@]}"
 
 # Configure AWS CLI with S3 or MinIO endpoint
 aws configure set aws_access_key_id "$ACCESS_KEY"
