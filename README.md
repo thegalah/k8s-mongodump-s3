@@ -5,6 +5,7 @@ This repository contains a Dockerfile and script to perform a MongoDB dump and u
 ## Features
 
 - Perform a mongodump from a given MongoDB connection string
+- Customize the dump with various options
 - Upload the dump to either an S3 or MinIO endpoint
 - Configurable via environment variables
 - Suitable for running as a Kubernetes job
@@ -28,6 +29,11 @@ docker run -e MONGO_CONNECTION_STRING=your_connection_string -e MINIO_ENDPOINT=y
 - `MONGO_CONNECTION_STRING`: The connection string for the MongoDB instance
 - `MINIO_ENDPOINT` or `S3_ENDPOINT`: The endpoint for the MinIO or S3 storage
 - `STORAGE_PATH`: The path where the dump should be stored
+- `MONGO_USERNAME`: MongoDB username (Optional)
+- `MONGO_PASSWORD`: MongoDB password (Optional)
+- `MONGO_DATABASE`: Name of the database to dump (Optional)
+- `MONGO_COLLECTION`: Name of the collection to dump (Optional)
+- `MONGO_QUERY`: Query filter in JSON format (Optional)
 
 ## Running as a Kubernetes Job
 
