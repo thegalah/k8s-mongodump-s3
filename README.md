@@ -37,7 +37,42 @@ docker run -e MONGO_CONNECTION_STRING=your_connection_string -e MINIO_ENDPOINT=y
 
 ## Running as a Kubernetes Job
 
-You can create a Kubernetes job YAML file to run this Docker image as a job within a Kubernetes cluster. Make sure to specify the environment variables as needed.
+You can create a Kubernetes job to run this Docker image as a job within a Kubernetes cluster. Here's an example YAML file:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-backup-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongodb-backup
+          image: thegalah/k8s-mongodump-s3:1.0.0
+          env:
+            - name: MONGO_CONNECTION_STRING
+              value: your_connection_string
+            - name: MINIO_ENDPOINT # Or S3_ENDPOINT
+              value: your_minio_endpoint
+            - name: STORAGE_PATH
+              value: your_storage_path
+            - name: MONGO_USERNAME
+              value: your_username # Optional
+            - name: MONGO_PASSWORD
+              valueFrom: # Optional
+                secretKeyRef:
+                  name: mongodb-password-secret
+                  key: password
+            - name: MONGO_DATABASE
+              value: your_database # Optional
+            - name: MONGO_COLLECTION
+              value: your_collection # Optional
+            - name: MONGO_QUERY
+              value: your_query # Optional
+      restartPolicy: Never
+  backoffLimit: 3
+```
 
 ## License
 
