@@ -38,9 +38,13 @@ fi
 # Running the mongodump command
 mongodump "${DUMP_OPTIONS[@]}"
 
-# Configure AWS CLI with S3 or MinIO endpoint
-aws configure set aws_access_key_id "$ACCESS_KEY"
-aws configure set aws_secret_access_key "$SECRET_KEY"
+# Conditionally configure AWS CLI with access and secret keys
+if [ -n "$ACCESS_KEY" ] && [ -n "$SECRET_KEY" ]; then
+    aws configure set aws_access_key_id "$ACCESS_KEY"
+    aws configure set aws_secret_access_key "$SECRET_KEY"
+fi
+
+# Configure the endpoint
 aws configure set default.s3.endpoint_url "$S3_OR_MINIO_ENDPOINT"
 
 # Upload to the given STORAGE_PATH
