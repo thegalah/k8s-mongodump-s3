@@ -5,8 +5,8 @@ This repository contains a Dockerfile and script to perform a daily MongoDB dump
 ## Features
 
 - Perform a daily mongodump from a given MongoDB connection string
-- Customize the dump with various options
-- Upload the dump to either an S3 or MinIO endpoint
+- Customize the dump with various options, including a configurable file prefix
+- Upload the dump to either an S3 or MinIO endpoint with optional no-sign request
 - Configurable via environment variables
 - Suitable for running as a Kubernetes CronJob
 
@@ -23,19 +23,22 @@ docker build -t thegalah/k8s-mongodump-s3:1.0.0 .
 ### Running with Docker
 
 ```bash
-docker run -e MONGO_CONNECTION_STRING=your_connection_string -e MINIO_ENDPOINT=your_minio_endpoint -e STORAGE_PATH=your_storage_path thegalah/k8s-mongodump-s3:1.0.0
+docker run -e MONGO_CONNECTION_STRING=your_connection_string -e S3_OR_MINIO_ENDPOINT=your_s3_or_minio_endpoint -e STORAGE_PATH=your_storage_path thegalah/k8s-mongodump-s3:1.0.0
 ```
 
 ### Environment Variables
 
 - `MONGO_CONNECTION_STRING`: The connection string for the MongoDB instance
-- `MINIO_ENDPOINT` or `S3_ENDPOINT`: The endpoint for the MinIO or S3 storage
+- `S3_OR_MINIO_ENDPOINT`: The endpoint for the MinIO or S3 storage
 - `STORAGE_PATH`: The path where the dump should be stored
+- `DUMP_PREFIX`: The prefix for the dump files (Optional, defaults to "dump")
 - `MONGO_USERNAME`: MongoDB username (Optional)
 - `MONGO_PASSWORD`: MongoDB password (Optional)
 - `MONGO_DATABASE`: Name of the database to dump (Optional)
 - `MONGO_COLLECTION`: Name of the collection to dump (Optional)
 - `MONGO_QUERY`: Query filter in JSON format (Optional)
+- `ACCESS_KEY`: Access key for S3 or MinIO (Optional)
+- `SECRET_KEY`: Secret key for S3 or MinIO (Optional)
 
 ## Running as a Kubernetes CronJob
 
@@ -58,10 +61,12 @@ spec:
               env:
                 - name: MONGO_CONNECTION_STRING
                   value: your_connection_string
-                - name: MINIO_ENDPOINT # Or S3_ENDPOINT
-                  value: your_minio_endpoint
+                - name: S3_OR_MINIO_ENDPOINT
+                  value: your_s3_or_minio_endpoint
                 - name: STORAGE_PATH
                   value: your_storage_path
+                - name: DUMP_PREFIX
+                  value: your_prefix # Optional
                 - name: MONGO_USERNAME
                   value: your_username # Optional
                 - name: MONGO_PASSWORD
@@ -75,6 +80,10 @@ spec:
                   value: your_collection # Optional
                 - name: MONGO_QUERY
                   value: your_query # Optional
+                - name: ACCESS_KEY
+                  value: your_access_key # Optional
+                - name: SECRET_KEY
+                  value: your_secret_key # Optional
           restartPolicy: OnFailure
 ```
 

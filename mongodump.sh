@@ -15,8 +15,27 @@ mkdir -p /dump/archive
 # Building the file name with date
 FILENAME="/dump/archive/${DUMP_PREFIX}_$(date +'%Y%m%d%H%M').gz"
 
-# Running the mongodump command
-mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan
+# Function to run mongodump command
+run_mongodump() {
+    mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan
+}
+
+# Attempt to run the mongodump command up to 3 times if it fails
+RETRIES=3
+for i in $(seq 1 $RETRIES); do
+    run_mongodump
+    EXIT_CODE=$?
+    if [ $EXIT_CODE -eq 0 ]; then
+        break
+    else
+        echo "mongodump failed, attempt $i of $RETRIES"
+        rm -f "$FILENAME" # Removing corrupted dump file
+        if [ $i -eq $RETRIES ]; then
+            echo "Failed all attempts, exiting."
+            exit 1
+        fi
+    fi
+done
 
 # Configure AWS CLI with S3 or MinIO endpoint and optionally access keys
 aws configure set default.s3.endpoint_url "$S3_OR_MINIO_ENDPOINT"
