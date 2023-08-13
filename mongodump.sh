@@ -6,11 +6,14 @@ if [ -z "$MONGO_CONNECTION_STRING" ] || [ -z "$S3_OR_MINIO_ENDPOINT" ] || [ -z "
     exit 1
 fi
 
+# Setting the prefix for the dump files
+DUMP_PREFIX=${DUMP_PREFIX:-dump}
+
 # Creating the output directory
 mkdir -p /dump/archive
 
 # Building the file name with date
-FILENAME="/dump/archive/dump_$(date +'%Y%m%d%H%M').gz"
+FILENAME="/dump/archive/${DUMP_PREFIX}_$(date +'%Y%m%d%H%M').gz"
 
 # Running the mongodump command
 mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan
