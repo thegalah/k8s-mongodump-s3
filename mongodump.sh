@@ -6,8 +6,31 @@ if [ -z "$MONGO_CONNECTION_STRING" ] || ([ -z "$MINIO_ENDPOINT" ] && [ -z "$S3_E
     exit 1
 fi
 
-# Mongodump
-mongodump --uri="$MONGO_CONNECTION_STRING" --archive="/dump/archive" --gzip
+# Building the mongodump command
+DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"/dump/archive\""
+
+if [ -n "$MONGO_USERNAME" ]; then
+    DUMP_CMD+=" --username=\"$MONGO_USERNAME\""
+fi
+
+if [ -n "$MONGO_PASSWORD" ]; then
+    DUMP_CMD+=" --password=\"$MONGO_PASSWORD\""
+fi
+
+if [ -n "$MONGO_DATABASE" ]; then
+    DUMP_CMD+=" --db=\"$MONGO_DATABASE\""
+fi
+
+if [ -n "$MONGO_COLLECTION" ]; then
+    DUMP_CMD+=" --collection=\"$MONGO_COLLECTION\""
+fi
+
+if [ -n "$MONGO_QUERY" ]; then
+    DUMP_CMD+=" --query=\"$MONGO_QUERY\""
+fi
+
+# Running the mongodump command
+eval $DUMP_CMD
 
 # Configure AWS CLI with S3 or MinIO endpoint
 if [ -n "$S3_ENDPOINT" ]; then
