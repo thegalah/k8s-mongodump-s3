@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Checking required environment variables
-if [ -z "$MONGO_CONNECTION_STRING" ] || ([ -z "$MINIO_ENDPOINT" ] && [ -z "$S3_ENDPOINT" ]) || [ -z "$STORAGE_PATH" ]; then
+if [ -z "$MONGO_CONNECTION_STRING" ] || [ -z "$S3_OR_MINIO_ENDPOINT" ] || [ -z "$STORAGE_PATH" ]; then
     echo "Missing required environment variables!"
     exit 1
 fi
@@ -13,7 +13,7 @@ mkdir -p /dump/archive
 FILENAME="/dump/archive/dump_$(date +'%Y%m%d%H%M').gz"
 
 # Building the mongodump command
-DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"$FILENAME\" --gzip"
+DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"$FILENAME\" --gzip --forceTableScan"
 
 if [ -n "$MONGO_USERNAME" ]; then
     DUMP_CMD+=" --username=\"$MONGO_USERNAME\""
@@ -39,11 +39,9 @@ fi
 eval $DUMP_CMD
 
 # Configure AWS CLI with S3 or MinIO endpoint
-if [ -n "$S3_ENDPOINT" ]; then
-    aws configure set default.s3.endpoint_url "$S3_ENDPOINT"
-else
-    aws configure set default.s3.endpoint_url "$MINIO_ENDPOINT"
-fi
+aws configure set aws_access_key_id "$ACCESS_KEY"
+aws configure set aws_secret_access_key "$SECRET_KEY"
+aws configure set default.s3.endpoint_url "$S3_OR_MINIO_ENDPOINT"
 
 # Upload to the given STORAGE_PATH
 aws s3 cp "$FILENAME" s3://$STORAGE_PATH
