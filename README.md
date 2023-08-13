@@ -21,7 +21,7 @@ docker build -t your-image-name .
 ### Running with Docker
 
 \`\`\`bash
-docker run -e MONGO_CONNECTION_STRING=your_connection_string -e MINIO_ENDPOINT=your_minio_endpoint -e STORAGE_PATH=your_storage_path your-image-name
+docker run -e MONGO_CONNECTION_STRING=your_connection_string -e MINIO_ENDPOINT=your_minio_endpoint -e STORAGE_PATH=your_storage_path thegalah/k8s-mongodump-s3:1.0.0
 \`\`\`
 
 ### Environment Variables
