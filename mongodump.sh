@@ -6,8 +6,14 @@ if [ -z "$MONGO_CONNECTION_STRING" ] || ([ -z "$MINIO_ENDPOINT" ] && [ -z "$S3_E
     exit 1
 fi
 
+# Creating the output directory
+mkdir -p /dump/archive
+
+# Building the file name with date
+FILENAME="/dump/archive/dump_$(date +'%Y%m%d%H%M').gz"
+
 # Building the mongodump command
-DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"/dump/archive\""
+DUMP_CMD="mongodump --uri=\"$MONGO_CONNECTION_STRING\" --archive=\"$FILENAME\" --gzip"
 
 if [ -n "$MONGO_USERNAME" ]; then
     DUMP_CMD+=" --username=\"$MONGO_USERNAME\""
@@ -40,4 +46,4 @@ else
 fi
 
 # Upload to the given STORAGE_PATH
-aws s3 cp /dump/archive s3://$STORAGE_PATH
+aws s3 cp "$FILENAME" s3://$STORAGE_PATH
