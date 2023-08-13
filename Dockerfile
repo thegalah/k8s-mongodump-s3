@@ -1,4 +1,4 @@
-FROM mongo:latest
+FROM mongo:6.0.4
 
 # Install AWS CLI
 RUN apt-get update && \
