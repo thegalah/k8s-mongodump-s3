@@ -25,7 +25,7 @@ run_mongodump() {
     return $EXIT_CODE
 }
 
-# Attempt to run the mongodump command up to 3 times if it fails
+# Attempt to run the mongodump command if it fails
 RETRIES=7
 DELAY=1 # Initial delay in seconds
 for i in $(seq 1 $RETRIES); do
