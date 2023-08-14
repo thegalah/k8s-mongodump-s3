@@ -17,11 +17,16 @@ FILENAME="/dump/archive/${DUMP_PREFIX}_$(date +'%Y%m%d%H%M').gz"
 
 # Function to run mongodump command
 run_mongodump() {
-    mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan --quiet
+    output="$(mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan --quiet 2>&1)"
+    EXIT_CODE=$?
+    if [ $EXIT_CODE -ne 0 ]; then
+        echo -e "Error running mongodump: $output"
+    fi
+    return $EXIT_CODE
 }
 
-# Attempt to run the mongodump command up to 3 times if it fails
-RETRIES=10
+# Attempt to run the mongodump command if it fails
+RETRIES=7
 DELAY=1 # Initial delay in seconds
 for i in $(seq 1 $RETRIES); do
     run_mongodump
