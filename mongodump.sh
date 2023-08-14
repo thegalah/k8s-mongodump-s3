@@ -17,11 +17,12 @@ FILENAME="/dump/archive/${DUMP_PREFIX}_$(date +'%Y%m%d%H%M').gz"
 
 # Function to run mongodump command
 run_mongodump() {
-    mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan
+    mongodump --uri="$MONGO_CONNECTION_STRING" --archive="$FILENAME" --gzip --forceTableScan --quiet
 }
 
 # Attempt to run the mongodump command up to 3 times if it fails
 RETRIES=10
+DELAY=1 # Initial delay in seconds
 for i in $(seq 1 $RETRIES); do
     run_mongodump
     EXIT_CODE=$?
@@ -30,7 +31,11 @@ for i in $(seq 1 $RETRIES); do
     else
         echo "mongodump failed, attempt $i of $RETRIES"
         rm -f "$FILENAME" # Removing corrupted dump file
-        if [ $i -eq $RETRIES ]; then
+        if [ $i -ne $RETRIES ]; then
+            echo "Waiting $DELAY seconds before next attempt..."
+            sleep $DELAY
+            DELAY=$((DELAY * 2)) # Double the delay for next attempt
+        else
             echo "Failed all attempts, exiting."
             exit 1
         fi
