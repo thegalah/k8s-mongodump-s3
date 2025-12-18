@@ -38,7 +38,7 @@ docker run -e MONGO_CONNECTION_STRING=your_connection_string -e S3_OR_MINIO_ENDP
 | `DUMP_PREFIX` | No | The prefix for the dump files (defaults to "dump") |
 | `ACCESS_KEY` | No | Access key for S3 or MinIO |
 | `SECRET_KEY` | No | Secret key for S3 or MinIO |
-| `MONGODUMP_EXTRA_ARGS` | No | Additional arguments to pass to mongodump (e.g., `--tlsCAFile=/path/to/ca.crt`) |
+| `MONGODUMP_EXTRA_ARGS` | No | Additional arguments to pass to mongodump (e.g., `--sslCAFile=/path/to/ca.crt`) |
 
 ## Running as a Kubernetes CronJob
 
@@ -111,7 +111,7 @@ spec:
                 - name: SECRET_KEY
                   value: minio-secret-key
                 - name: MONGODUMP_EXTRA_ARGS
-                  value: "--tlsCAFile=/etc/ssl/mongodb/ca.crt"
+                  value: "--sslCAFile=/etc/ssl/mongodb/ca.crt"
               volumeMounts:
                 - name: mongodb-ca
                   mountPath: /etc/ssl/mongodb
